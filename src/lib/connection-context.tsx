@@ -46,8 +46,14 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const parsed = JSON.parse(saved);
         setConfig(parsed);
         // auto-test saved connection
-        gatewayFetch(parsed, "/v1/models").then((res) => {
-          if (res.ok) setIsConnected(true);
+        gatewayFetch(parsed, "/tools/invoke", {
+          method: "POST",
+          body: JSON.stringify({ tool: "sessions_list", args: {} }),
+        }).then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.ok) setIsConnected(true);
+          }
         }).catch(() => {});
       } catch {}
     }
@@ -77,11 +83,18 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     saveConfig(newConfig);
 
     try {
-      const res = await gatewayFetch(newConfig, "/v1/models");
+      const res = await gatewayFetch(newConfig, "/tools/invoke", {
+        method: "POST",
+        body: JSON.stringify({ tool: "sessions_list", args: {} }),
+      });
 
       if (res.ok) {
-        setIsConnected(true);
-        return true;
+        const data = await res.json();
+        if (data?.ok) {
+          setIsConnected(true);
+          return true;
+        }
+        setError("Auth gagal — token/password salah");
       } else if (res.status === 401) {
         setError("Unauthorized — token/password salah");
       } else {
