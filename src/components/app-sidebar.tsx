@@ -47,6 +47,8 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     updatedAt: number;
     kind: string;
     channel: string;
+    totalTokens: number;
+    contextTokens: number;
   }>;
 }
 
@@ -178,9 +180,7 @@ export function AppSidebar({ navState, onNavChange, sessions, ...props }: AppSid
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-muted-foreground pl-4">
-                    <span>{session.model}</span>
-                    <span>·</span>
-                    <span>{session.channel}</span>
+                    <span>{session.totalTokens?.toLocaleString() ?? 0} / {session.contextTokens?.toLocaleString() ?? 0} tokens</span>
                   </div>
                 </button>
               ))}
