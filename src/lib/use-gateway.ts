@@ -64,5 +64,13 @@ export function useGateway() {
     return data?.sessions || [];
   }, [invoke]);
 
-  return { invoke, fetchSessions, isConnected };
+  const fetchHistory = useCallback(
+    async (sessionKey: string, limit = 50) => {
+      const data = await invoke("sessions_history", { sessionKey, limit });
+      return data;
+    },
+    [invoke]
+  );
+
+  return { invoke, fetchSessions, fetchHistory, isConnected };
 }

@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ChatView from "@/components/chat-view";
 
 interface NavState {
   activeNav: string;
@@ -60,13 +61,13 @@ function DashboardContent() {
         onNavChange={setNavState}
         sessions={sessions}
       />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
         {/* Top bar */}
         <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/50 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 !h-4" />
-          <div className="flex items-center gap-2 flex-1">
-            <span className="text-sm font-medium">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <span className="text-sm font-medium truncate">
               {navState.activeSession
                 ? activeSession?.label || activeSession?.displayName || "Session"
                 : navState.activeNav === "sessions"
@@ -107,38 +108,23 @@ function DashboardContent() {
         </header>
 
         {/* Main area */}
-        <main className="flex-1 flex items-center justify-center p-6">
+        <main className="flex-1 overflow-hidden flex flex-col min-w-0">
           {navState.activeSession && activeSession ? (
-            <div className="text-center space-y-4 max-w-md">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center shadow-xl">
-                <span className="text-2xl">🤖</span>
-              </div>
-              <h2 className="text-xl font-bold">
-                {activeSession.label || activeSession.displayName}
-              </h2>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p>Model: {activeSession.model}</p>
-                <p>Cost: ${activeSession.estimatedCostUsd.toFixed(4)}</p>
-                <p>Tokens: {activeSession.totalTokens.toLocaleString()}</p>
-                <p>
-                  Context:{" "}
-                  {((activeSession.totalTokens / activeSession.contextTokens) * 100).toFixed(1)}
-                  %
+            <ChatView
+              sessionKey={activeSession.key}
+              sessionLabel={activeSession.label || activeSession.displayName}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full p-6">
+              <div className="text-center space-y-3">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <h2 className="text-xl font-bold">WhezaClaw</h2>
+                <p className="text-sm text-muted-foreground">
+                  Select a session from the sidebar to view chat history
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Chat view coming soon...
-              </p>
-            </div>
-          ) : (
-            <div className="text-center space-y-3">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
-                <span className="text-2xl">⚡</span>
-              </div>
-              <h2 className="text-xl font-bold">WhezaClaw</h2>
-              <p className="text-sm text-muted-foreground">
-                Select a session from the sidebar to view details
-              </p>
             </div>
           )}
         </main>
